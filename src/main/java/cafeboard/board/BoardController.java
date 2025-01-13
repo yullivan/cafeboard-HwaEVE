@@ -18,30 +18,30 @@ public class BoardController {
 
     // Create
     @PostMapping("/boards")
-    public ResponseEntity<BoardResponseDTO> createBoard(@RequestBody BoardRequestDTO boardRequestDTO) {
-        BoardResponseDTO boardResponse = boardService.createBoard(boardRequestDTO);
+    public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardRequest boardRequest) {
+        BoardResponse boardResponse = boardService.createBoard(boardRequest);
         return new ResponseEntity<>(boardResponse, HttpStatus.CREATED);
     }
 
     // Read all
     @GetMapping("/boards")
-    public ResponseEntity<List<BoardResponseDTO>> getAllBoards() {
-        List<BoardResponseDTO> boards = boardService.getAllBoards();
+    public ResponseEntity<List<BoardResponse>> getAllBoards() {
+        List<BoardResponse> boards = boardService.getAllBoards();
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
     // Read one
     @GetMapping("/boards/{id}")
-    public ResponseEntity<BoardResponseDTO> getBoardById(@PathVariable Long id) {
-        Optional<BoardResponseDTO> board = boardService.getBoardById(id);
+    public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long id) {
+        Optional<BoardResponse> board = boardService.getBoardById(id);
         return board.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     // Update
     @PutMapping("/boards/{id}")
-    public ResponseEntity<BoardResponseDTO> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDTO boardRequestDTO) {
-        Optional<BoardResponseDTO> updatedBoard = boardService.updateBoard(id, boardRequestDTO);
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long id, @RequestBody BoardRequest boardRequest) {
+        Optional<BoardResponse> updatedBoard = boardService.updateBoard(id, boardRequest);
         return updatedBoard.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

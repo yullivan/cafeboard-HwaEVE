@@ -1,7 +1,9 @@
 package cafeboard.board;
 
+import cafeboard.post.Post;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -10,12 +12,16 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts; // 게시글과의 관계 설정
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Board() {
-    }
+    public Board() {}
 
     public Board(String name) {
         this.name = name;
@@ -23,6 +29,7 @@ public class Board {
         this.updatedAt = createdAt;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -33,6 +40,10 @@ public class Board {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -1,6 +1,5 @@
 package cafeboard.board;
 
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,31 +15,31 @@ public class BoardService {
     }
 
     // Create
-    public BoardResponseDTO createBoard(BoardRequestDTO boardRequestDTO) {
-        Board board = new Board(boardRequestDTO.name());
+    public BoardResponse createBoard(BoardRequest boardRequest) {
+        Board board = new Board(boardRequest.name());
         board = boardRepository.save(board);
-        return new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
+        return new BoardResponse(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
     }
 
     // Read all
-    public List<BoardResponseDTO> getAllBoards() {
+    public List<BoardResponse> getAllBoards() {
         return boardRepository.findAll().stream()
-                .map(board -> new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()))
+                .map(board -> new BoardResponse(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()))
                 .toList();
     }
 
     // Read one
-    public Optional<BoardResponseDTO> getBoardById(Long id) {
+    public Optional<BoardResponse> getBoardById(Long id) {
         return boardRepository.findById(id)
-                .map(board -> new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()));
+                .map(board -> new BoardResponse(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()));
     }
 
     // Update
-    public Optional<BoardResponseDTO> updateBoard(Long id, BoardRequestDTO boardRequestDTO) {
+    public Optional<BoardResponse> updateBoard(Long id, BoardRequest boardRequest) {
         return boardRepository.findById(id).map(board -> {
-            board.setName(boardRequestDTO.name());
+            board.setName(boardRequest.name());
             boardRepository.save(board);
-            return new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
+            return new BoardResponse(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
         });
     }
 

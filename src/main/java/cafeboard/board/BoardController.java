@@ -1,6 +1,5 @@
 package cafeboard.board;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,43 +12,45 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @Autowired
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
     }
 
-    // 게시판 생성
+    // Create
     @PostMapping("/boards")
-    public ResponseEntity<BoardResponseDto> createBoard(@RequestBody BoardRequestDto requestDto) {
-        BoardResponseDto board = boardService.createBoard(requestDto);
-        return new ResponseEntity<>(board, HttpStatus.CREATED);
+    public ResponseEntity<BoardResponseDTO> createBoard(@RequestBody BoardRequestDTO boardRequestDTO) {
+        BoardResponseDTO boardResponse = boardService.createBoard(boardRequestDTO);
+        return new ResponseEntity<>(boardResponse, HttpStatus.CREATED);
     }
 
-    // 전체 게시판 조회
+    // Read all
     @GetMapping("/boards")
-    public ResponseEntity<List<BoardResponseDto>> getAllBoards() {
-        List<BoardResponseDto> boards = boardService.getAllBoards();
+    public ResponseEntity<List<BoardResponseDTO>> getAllBoards() {
+        List<BoardResponseDTO> boards = boardService.getAllBoards();
         return new ResponseEntity<>(boards, HttpStatus.OK);
     }
 
-    // 게시판 조회 (ID로 조회)
+    // Read one
     @GetMapping("/boards/{id}")
-    public ResponseEntity<BoardResponseDto> getBoardById(@PathVariable("id") Long id) {
-        Optional<BoardResponseDto> board = boardService.getBoardById(id);
-        return board.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    public ResponseEntity<BoardResponseDTO> getBoardById(@PathVariable Long id) {
+        Optional<BoardResponseDTO> board = boardService.getBoardById(id);
+        return board.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // 게시판 수정
+    // Update
     @PutMapping("/boards/{id}")
-    public ResponseEntity<BoardResponseDto> updateBoard(@PathVariable("id") Long id, @RequestBody BoardRequestDto requestDto) {
-        BoardResponseDto updatedBoard = boardService.updateBoard(id, requestDto);
-        return ResponseEntity.ok(updatedBoard);
+    public ResponseEntity<BoardResponseDTO> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDTO boardRequestDTO) {
+        Optional<BoardResponseDTO> updatedBoard = boardService.updateBoard(id, boardRequestDTO);
+        return updatedBoard.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    // 게시판 삭제
+    // Delete
     @DeleteMapping("/boards/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable("id") Long id) {
-        boardService.deleteBoard(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+        boolean deleted = boardService.deleteBoard(id);
+        return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

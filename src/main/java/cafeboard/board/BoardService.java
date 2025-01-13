@@ -1,6 +1,6 @@
 package cafeboard.board;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,38 +11,44 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    @Autowired
     public BoardService(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
     }
 
-    public BoardResponseDto createBoard(BoardRequestDto requestDto) {
-        Board board = new Board();
-        board.setName(requestDto.name());
-        boardRepository.save(board);
-        return new BoardResponseDto(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
+    // Create
+    public BoardResponseDTO createBoard(BoardRequestDTO boardRequestDTO) {
+        Board board = new Board(boardRequestDTO.name());
+        board = boardRepository.save(board);
+        return new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
     }
 
-    public List<BoardResponseDto> getAllBoards() {
+    // Read all
+    public List<BoardResponseDTO> getAllBoards() {
         return boardRepository.findAll().stream()
-                .map(board -> new BoardResponseDto(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()))
+                .map(board -> new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()))
                 .toList();
     }
 
-    public Optional<BoardResponseDto> getBoardById(Long id) {
-        Optional<Board> board = boardRepository.findById(id);
-        return board.map(b -> new BoardResponseDto(b.getId(), b.getName(), b.getCreatedAt(), b.getUpdatedAt()));
+    // Read one
+    public Optional<BoardResponseDTO> getBoardById(Long id) {
+        return boardRepository.findById(id)
+                .map(board -> new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt()));
     }
 
-    public BoardResponseDto updateBoard(Long id, BoardRequestDto requestDto) {
-        Board board = boardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        board.setName(requestDto.name());
-        boardRepository.save(board);
-        return new BoardResponseDto(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
+    // Update
+    public Optional<BoardResponseDTO> updateBoard(Long id, BoardRequestDTO boardRequestDTO) {
+        return boardRepository.findById(id).map(board -> {
+            board.setName(boardRequestDTO.name());
+            boardRepository.save(board);
+            return new BoardResponseDTO(board.getId(), board.getName(), board.getCreatedAt(), board.getUpdatedAt());
+        });
     }
 
-    public void deleteBoard(Long id) {
-        Board board = boardRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Board not found"));
-        boardRepository.delete(board);
+    // Delete
+    public boolean deleteBoard(Long id) {
+        return boardRepository.findById(id).map(board -> {
+            boardRepository.delete(board);
+            return true;
+        }).orElse(false);
     }
 }

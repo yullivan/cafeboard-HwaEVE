@@ -3,7 +3,9 @@ package cafeboard;
 import cafeboard.board.Board;
 import cafeboard.board.BoardRepository;
 import cafeboard.board.BoardRequestDTO;
+import cafeboard.board.BoardResponseDTO;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,37 +64,50 @@ public class BoardApiTest {
     void 게시판생성() {
         BoardRequestDTO boardRequestDto = new BoardRequestDTO("새 게시판");
 
-        RestAssured.given().log().all()
-                .contentType("application/json")
+        BoardResponseDTO response = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .body(boardRequestDto)
                 .when()
                 .post("/boards")
                 .then()
+                .log().all()
                 .statusCode(HttpStatus.CREATED.value())
-                .body("name", equalTo(boardRequestDto.name()))
-                .body("createdAt", notNullValue())
-                .body("updatedAt", notNullValue());
+                .extract()
+                .as(BoardResponseDTO.class);
+
+        assertThat(response.name()).isEqualTo(boardRequestDto.name());
+        assertThat(response.createdAt()).isNotNull();
+        assertThat(response.updatedAt()).isNotNull();
     }
 
     @Test
     void 게시판수정() {
+        // 게시판 생성 후 ID 받기
         Long boardId = createBoardAndReturnId("기존 게시판");
 
+        // 수정할 게시판 데이터
         BoardRequestDTO updatedBoardRequestDto = new BoardRequestDTO("수정된 게시판");
 
-        RestAssured.given().log().all()
-                .contentType("application/json")
+        // 게시판 수정 요청
+        BoardResponseDTO updatedBoardResponse = RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
                 .body(updatedBoardRequestDto)
                 .pathParam("id", boardId)
                 .when()
                 .put("/boards/{id}")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("name", equalTo(updatedBoardRequestDto.name()));
+                .extract()
+                .as(BoardResponseDTO.class);
 
+        // 응답으로 받은 BoardResponseDTO에서 name 값 검증
+        assertThat(updatedBoardResponse.name()).isEqualTo(updatedBoardRequestDto.name());
+
+        // DB에서 게시판을 다시 조회하여 수정된 이름이 반영되었는지 확인
         Board updatedBoard = boardRepository.findById(boardId).orElseThrow();
         assertThat(updatedBoard.getName()).isEqualTo(updatedBoardRequestDto.name());
     }
+
 
     @Test
     void 게시판삭제() {

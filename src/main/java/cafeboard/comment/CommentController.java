@@ -3,6 +3,8 @@ package cafeboard.comment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class CommentController {
 
@@ -25,10 +27,20 @@ public class CommentController {
         return commentService.updateComment(id, commentRequest);
     }
 
-    // 댓글 삭제
     @DeleteMapping("/posts/{postId}/comments/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
+    }
+
+    @GetMapping("/posts/{postId}/comments/{id}")
+    public CommentResponse getComment(@PathVariable Long postId, @PathVariable Long id) {
+        return commentService.getComment(id);
+    }
+
+    // 댓글 목록 조회
+    @GetMapping("/posts/{postId}/comments")
+    public List<CommentResponse> getComments(@PathVariable Long postId) {
+        return commentService.getCommentsByPostId(postId);
     }
 }

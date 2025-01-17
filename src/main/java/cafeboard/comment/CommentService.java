@@ -2,8 +2,11 @@ package cafeboard.comment;
 
 import cafeboard.post.Post;
 import cafeboard.post.PostRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -40,6 +43,21 @@ public class CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
         commentRepository.delete(comment);
+    }
+
+    // 댓글 조회
+    public CommentResponse getComment(Long id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+        return toCommentResponse(comment);
+    }
+
+    // 댓글 목록 조회
+    public List<CommentResponse> getCommentsByPostId(Long postId) {
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        return comments.stream()
+                .map(this::toCommentResponse)
+                .collect(Collectors.toList());
     }
 
     private CommentResponse toCommentResponse(Comment comment) {

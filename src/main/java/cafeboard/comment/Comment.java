@@ -1,5 +1,6 @@
 package cafeboard.comment;
 
+import cafeboard.member.Member;
 import cafeboard.post.Post;
 
 import jakarta.persistence.*;
@@ -18,6 +19,10 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post; // 댓글은 하나의 게시글에 속함
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)  // Member 추가
+    private Member author; // 댓글 작성자
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

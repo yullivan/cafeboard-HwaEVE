@@ -3,6 +3,7 @@ package cafeboard.post;
 import cafeboard.board.Board;
 import cafeboard.comment.Comment;
 
+import cafeboard.member.Member;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,8 +20,12 @@ public class Post {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board; // 게시글은 하나의 게시판에 속함
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
+
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)  // Member 추가
+    private Member author; // 게시글 작성자
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
@@ -36,6 +41,10 @@ public class Post {
         this.board = board;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = createdAt;
+    }
+
+    public Post(String content) {
+        this.content = content;
     }
 
     public void update(String title, String content) {

@@ -1,9 +1,5 @@
-package cafeboard;
+package cafeboard.board;
 
-import cafeboard.board.Board;
-import cafeboard.board.BoardRepository;
-import cafeboard.board.BoardRequest;
-import cafeboard.board.BoardResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;

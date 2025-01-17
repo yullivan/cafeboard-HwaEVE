@@ -43,10 +43,6 @@ public class Post {
         this.updatedAt = createdAt;
     }
 
-    public Post(String content) {
-        this.content = content;
-    }
-
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
@@ -67,6 +63,10 @@ public class Post {
 
     public Board getBoard() {
         return board;
+    }
+
+    public Member getAuthor() {
+        return author;
     }
 
     public List<Comment> getComments() {
@@ -97,12 +97,12 @@ public class Post {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
-        return Objects.equals(id, post.id);
+        return Objects.equals(id, post.id) && Objects.equals(title, post.title) && Objects.equals(content, post.content) && Objects.equals(board, post.board) && Objects.equals(author, post.author) && Objects.equals(comments, post.comments) && Objects.equals(createdAt, post.createdAt) && Objects.equals(updatedAt, post.updatedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, title, content, board, author, comments, createdAt, updatedAt);
     }
 
     @Override
@@ -111,6 +111,9 @@ public class Post {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
+                ", board=" + board +
+                ", author=" + author +
+                ", comments=" + comments +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

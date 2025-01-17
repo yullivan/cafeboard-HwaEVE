@@ -7,9 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, JwtProvider jwtProvider) {
         this.memberRepository = memberRepository;
+        this.jwtProvider = jwtProvider;
     }
 
     // 회원 가입
@@ -37,7 +39,7 @@ public class MemberService {
     }
 
     // 로그인 (아이디, 비밀번호 확인)
-    public MemberResponse login(String username, String password) {
+    public String login(String username, String password) {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
@@ -49,6 +51,7 @@ public class MemberService {
             throw new RuntimeException("Invalid username or password");
         }
 
-        return new MemberResponse(member.getId(), member.getUsername(), member.getEmail());
+        // JWT 토큰 생성 후 반환
+        return jwtProvider.createToken(username); // 또는 이메일을 담을 수 있음
     }
 }

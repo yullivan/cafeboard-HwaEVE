@@ -28,7 +28,7 @@ public class MemberController {
 
     // 로그인
     @PostMapping("/members/login")
-    public MemberResponse login(@RequestParam String username, @RequestParam String password) {
+    public String login(@RequestParam String username, @RequestParam String password) {
         return memberService.login(username, password);
     }
 }

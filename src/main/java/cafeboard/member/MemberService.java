@@ -19,7 +19,11 @@ public class MemberService {
             throw new RuntimeException("Username is already taken");
         }
 
-        Member member = new Member(memberRequest.username(), memberRequest.password(), memberRequest.email());
+        // 비밀번호 해싱
+        String hashedPassword = SecurityUtils.sha256EncryptBase64(memberRequest.password());
+
+        // 해싱된 비밀번호로 새로운 회원 생성
+        Member member = new Member(memberRequest.username(), hashedPassword, memberRequest.email());
         memberRepository.save(member);
         return new MemberResponse(member.getId(), member.getUsername(), member.getEmail());
     }
@@ -37,7 +41,11 @@ public class MemberService {
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
-        if (!member.getPassword().equals(password)) {
+        // 입력된 비밀번호를 해싱하여 저장된 해시와 비교
+        String hashedInputPassword = SecurityUtils.sha256EncryptBase64(password);
+
+        // 비밀번호가 일치하는지 확인
+        if (!member.getPassword().equals(hashedInputPassword)) {
             throw new RuntimeException("Invalid username or password");
         }
 
